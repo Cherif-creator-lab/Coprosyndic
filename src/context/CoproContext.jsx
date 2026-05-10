@@ -4,7 +4,7 @@ import { supabase } from '../supabaseClient';
 const CoproContext = createContext();
 
 export function CoproProvider({ children }) {
-  const [data, setData] = useState({ residences: [], clients: [], payments: {} });
+  const [data, setData] = useState({ residences: [], clients: [], payments: {}, paymentHistory: [] });
   const [loading, setLoading] = useState(true);
 
   // Fetch initial data
@@ -14,9 +14,10 @@ export function CoproProvider({ children }) {
         const { data: resData, error: errRes } = await supabase.from('residences').select('*');
         const { data: cliData, error: errCli } = await supabase.from('clients').select('*');
         const { data: payData, error: errPay } = await supabase.from('payments').select('*');
+        const { data: histData, error: errHist } = await supabase.from('payment_history').select('*').order('created_at', { ascending: false });
         
-        if (errRes || errCli || errPay) {
-            console.error("Supabase Error:", errRes || errCli || errPay);
+        if (errRes || errCli || errPay || errHist) {
+            console.error("Supabase Error:", errRes || errCli || errPay || errHist);
         }
 
         const mappedRes = (resData || []).map(r => ({
@@ -55,7 +56,7 @@ export function CoproProvider({ children }) {
             });
         }
 
-        setData({ residences: mappedRes, clients: mappedCli, payments: paymentsObj });
+        setData({ residences: mappedRes, clients: mappedCli, payments: paymentsObj, paymentHistory: histData || [] });
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -216,6 +217,19 @@ export function CoproProvider({ children }) {
     }
   };
 
+  const logPaymentHistory = async (historyData) => {
+    // historyData: { residence_id, apt_number, client_name, paid_months_str, total_amount, receipt_id }
+    const { data: inserted, error } = await supabase.from('payment_history').insert([historyData]).select().single();
+    if (!error && inserted) {
+      setData(prev => ({
+        ...prev,
+        paymentHistory: [inserted, ...prev.paymentHistory]
+      }));
+    } else {
+      console.error("Error logging payment:", error);
+    }
+  };
+
   const addYearToResidence = async (residenceId, year) => {
     const res = data.residences.find(r => r.id === residenceId);
     if (!res) return;
@@ -295,7 +309,7 @@ export function CoproProvider({ children }) {
   }
 
   return (
-    <CoproContext.Provider value={{ data, togglePayment, addResidence, addClient, editClient, deleteClient, addYearToResidence, removeYearFromResidence, getMatrixForResidence }}>
+    <CoproContext.Provider value={{ data, togglePayment, addResidence, addClient, editClient, deleteClient, addYearToResidence, removeYearFromResidence, getMatrixForResidence, logPaymentHistory }}>
       {children}
     </CoproContext.Provider>
   );

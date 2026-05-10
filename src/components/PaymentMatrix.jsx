@@ -12,7 +12,7 @@ const monthsAr = ['يناير', 'فبراير', 'مارس', 'ابريل', 'ما�
 
 export default function PaymentMatrix() {
   const { id } = useParams();
-  const { data, togglePayment, getMatrixForResidence, addYearToResidence, removeYearFromResidence } = useCopro();
+  const { data, togglePayment, getMatrixForResidence, addYearToResidence, removeYearFromResidence, logPaymentHistory } = useCopro();
   
   const [newYear, setNewYear] = useState('');
   const [activeTab, setActiveTab] = useState('matrix');
@@ -26,6 +26,7 @@ export default function PaymentMatrix() {
      return <div className="card">Résidence introuvable.</div>;
   }
 
+  const history = (data.paymentHistory || []).filter(h => h.residence_id === id);
   const matrix = getMatrixForResidence(id);
   const aptIds = Object.keys(matrix).sort((a,b) => parseInt(a) - parseInt(b));
   const dbYears = residence.years || [2025];
@@ -114,13 +115,23 @@ export default function PaymentMatrix() {
       const paidMonthsStr = sortedSelected.map(m => `${monthsAr[m.mIdx]} ${m.year}`).join('، ');
       const total = sortedSelected.length * costPerMonth;
       
+      const receiptId = `RC${Date.now().toString().slice(-6)}-RH${String(receiptModal.apt).padStart(3, '0')}`;
       setPrintData({
          apt: receiptModal.apt,
          client: receiptModal.client,
          clientFloor: receiptModal.clientFloor,
          paidMonthsStr,
          total,
-         receiptId: `RC${Date.now().toString().slice(-6)}-RH${String(receiptModal.apt).padStart(3, '0')}`
+         receiptId
+      });
+      
+      logPaymentHistory({
+         residence_id: id,
+         apt_number: receiptModal.apt,
+         client_name: receiptModal.client,
+         paid_months_str: paidMonthsStr,
+         total_amount: total,
+         receipt_id: receiptId
       });
       
       setReceiptModal(null);
@@ -204,6 +215,9 @@ export default function PaymentMatrix() {
            </button>
            <button className={`btn ${activeTab === 'receipt' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setActiveTab('receipt')} style={{flex: 1}} disabled={!printData}>
              Aperçu du Dernier Reçu
+           </button>
+           <button className={`btn ${activeTab === 'history' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setActiveTab('history')} style={{flex: 1}}>
+             Historique
            </button>
         </div>
       
@@ -530,6 +544,41 @@ export default function PaymentMatrix() {
              <div style={{marginTop: '6px', backgroundColor: '#eee', padding: '6px', textAlign: 'center', fontSize: '9px', border: '1px solid #ccc'}}>
                 المقر الاجتماعي: {residence.address}
              </div>
+           </div>
+         )}
+         
+         {/* HISTORY TAB */}
+         {activeTab === 'history' && (
+           <div className="card" style={{overflowX: 'auto'}}>
+             <h2 style={{marginBottom: '1rem'}}>Historique des Paiements</h2>
+             <table className="data-table" style={{width: '100%', minWidth: '800px'}}>
+               <thead>
+                 <tr>
+                   <th>Date et Heure</th>
+                   <th>Reçu N°</th>
+                   <th>Appartement</th>
+                   <th>Propriétaire</th>
+                   <th>Mois Payés</th>
+                   <th>Montant</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 {history.length > 0 ? history.map(h => (
+                   <tr key={h.id}>
+                     <td>{new Date(h.created_at).toLocaleString('fr-FR')}</td>
+                     <td style={{fontFamily: 'monospace'}}>{h.receipt_id}</td>
+                     <td><strong>{h.apt_number}</strong></td>
+                     <td>{h.client_name}</td>
+                     <td>{h.paid_months_str}</td>
+                     <td style={{fontWeight: 'bold', color: 'var(--color-success)'}}>{h.total_amount} DH</td>
+                   </tr>
+                 )) : (
+                   <tr>
+                     <td colSpan="6" style={{textAlign: 'center', padding: '2rem'}}>Aucun historique de paiement pour cette résidence.</td>
+                   </tr>
+                 )}
+               </tbody>
+             </table>
            </div>
          )}
       </div>
