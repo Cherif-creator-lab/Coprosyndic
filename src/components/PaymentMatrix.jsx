@@ -358,6 +358,41 @@ export default function PaymentMatrix() {
              <p style={{textAlign: 'center', color: '#000'}}><em>(Aperçu du reçu — Format A5 paysage à l'impression)</em></p>
           </div>
         )}
+
+        {/* HISTORY TAB */}
+        {activeTab === 'history' && (
+          <div className="card" style={{overflowX: 'auto'}}>
+            <h2 style={{marginBottom: '1rem'}}>Historique des Paiements</h2>
+            <table className="data-table" style={{width: '100%', minWidth: '800px'}}>
+              <thead>
+                <tr>
+                  <th>Date et Heure</th>
+                  <th>Reçu N°</th>
+                  <th>Appartement</th>
+                  <th>Propriétaire</th>
+                  <th>Mois Payés</th>
+                  <th>Montant</th>
+                </tr>
+              </thead>
+              <tbody>
+                {history.length > 0 ? history.map(h => (
+                  <tr key={h.id}>
+                    <td>{new Date(h.created_at).toLocaleString('fr-FR')}</td>
+                    <td style={{fontFamily: 'monospace'}}>{h.receipt_id}</td>
+                    <td><strong>{h.apt_number}</strong></td>
+                    <td>{h.client_name}</td>
+                    <td>{h.paid_months_str}</td>
+                    <td style={{fontWeight: 'bold', color: 'var(--color-success)'}}>{h.total_amount} DH</td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan="6" style={{textAlign: 'center', padding: '2rem'}}>Aucun historique de paiement pour cette résidence.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* PRINT UI - MAPPED EXACTLY TO THE IMAGES IN ARABIC */}
@@ -544,41 +579,6 @@ export default function PaymentMatrix() {
              <div style={{marginTop: '6px', backgroundColor: '#eee', padding: '6px', textAlign: 'center', fontSize: '9px', border: '1px solid #ccc'}}>
                 المقر الاجتماعي: {residence.address}
              </div>
-           </div>
-         )}
-         
-         {/* HISTORY TAB */}
-         {activeTab === 'history' && (
-           <div className="card" style={{overflowX: 'auto'}}>
-             <h2 style={{marginBottom: '1rem'}}>Historique des Paiements</h2>
-             <table className="data-table" style={{width: '100%', minWidth: '800px'}}>
-               <thead>
-                 <tr>
-                   <th>Date et Heure</th>
-                   <th>Reçu N°</th>
-                   <th>Appartement</th>
-                   <th>Propriétaire</th>
-                   <th>Mois Payés</th>
-                   <th>Montant</th>
-                 </tr>
-               </thead>
-               <tbody>
-                 {history.length > 0 ? history.map(h => (
-                   <tr key={h.id}>
-                     <td>{new Date(h.created_at).toLocaleString('fr-FR')}</td>
-                     <td style={{fontFamily: 'monospace'}}>{h.receipt_id}</td>
-                     <td><strong>{h.apt_number}</strong></td>
-                     <td>{h.client_name}</td>
-                     <td>{h.paid_months_str}</td>
-                     <td style={{fontWeight: 'bold', color: 'var(--color-success)'}}>{h.total_amount} DH</td>
-                   </tr>
-                 )) : (
-                   <tr>
-                     <td colSpan="6" style={{textAlign: 'center', padding: '2rem'}}>Aucun historique de paiement pour cette résidence.</td>
-                   </tr>
-                 )}
-               </tbody>
-             </table>
            </div>
          )}
       </div>
