@@ -4,10 +4,11 @@ import { useCopro } from '../context/CoproContext';
 import { ArrowLeft, Trash2, CalendarPlus, FileDown, Receipt, Check, X } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 
+import Barcode from 'react-barcode';
+
 const monthsFr = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
 const monthsFrShort = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
 const monthsAr = ['يناير', 'فبراير', 'مارس', 'ابريل', 'ماي', 'يونيو', 'يوليوز', 'غشت', 'شتنبر', 'اكتوبر', 'نونبر', 'دجنبر'];
-const barcodePattern = [2,4,2,2,3,1,4,2,2,3,4,1,2,4,2,3,1,4,2,2,4,3,2,1,4,2,2,4,1,3,2,4,2,2,3,4,2,1,2,4];
 
 export default function PaymentMatrix() {
   const { id } = useParams();
@@ -118,7 +119,8 @@ export default function PaymentMatrix() {
          client: receiptModal.client,
          clientFloor: receiptModal.clientFloor,
          paidMonthsStr,
-         total
+         total,
+         receiptId: `RC${Date.now().toString().slice(-6)}-RH${String(receiptModal.apt).padStart(3, '0')}`
       });
       
       setReceiptModal(null);
@@ -138,7 +140,7 @@ export default function PaymentMatrix() {
           .print-only { display: block !important; }
           .sidebar { display: none !important; }
           .main-content { padding: 0 !important; overflow: visible !important; background: white !important; }
-          body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          body, * { color: black !important; background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           @page { size: ${pageSize}; margin: ${pageMargin}; }
         }
         @media screen {
@@ -511,12 +513,17 @@ export default function PaymentMatrix() {
                 </div>
              </div>
 
-             {/* Barcode */}
-             <div style={{textAlign: 'center', borderTop: '1px solid #ccc', paddingTop: '8px'}}>
-                <div style={{display: 'inline-flex', height: '35px', gap: '2px', marginBottom: '4px', alignItems: 'flex-end', justifyContent: 'center'}}>
-                   {barcodePattern.map((width, i) => <div key={i} style={{width: width + 'px', height: '100%', backgroundColor: '#000'}}></div>)}
-                </div>
-                <p style={{margin: 0, fontFamily: 'monospace', letterSpacing: '3px', fontSize: '11px'}}>RC{Date.now().toString().slice(-6)}-RH{printData.apt.padStart(3, '0')}</p>
+             {/* Barcode Unique */}
+             <div style={{textAlign: 'center', borderTop: '1px solid #ccc', paddingTop: '8px', display: 'flex', justifyContent: 'center'}}>
+                <Barcode 
+                  value={printData.receiptId || 'RC-000000'} 
+                  height={35} 
+                  width={1.5} 
+                  fontSize={11} 
+                  margin={0} 
+                  font="monospace" 
+                  textMargin={4} 
+                />
              </div>
              
              {/* Footer */}
