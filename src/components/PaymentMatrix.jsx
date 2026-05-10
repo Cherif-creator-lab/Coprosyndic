@@ -27,7 +27,9 @@ export default function PaymentMatrix() {
 
   const matrix = getMatrixForResidence(id);
   const aptIds = Object.keys(matrix).sort((a,b) => parseInt(a) - parseInt(b));
-  const activeYears = residence.years || [2025];
+  const dbYears = residence.years || [2025];
+  const [hiddenYears, setHiddenYears] = useState([]);
+  const activeYears = dbYears.filter(y => !hiddenYears.includes(y)).sort((a,b) => a - b);
   const costPerMonth = parseInt(residence.cotisation) || 300;
 
   const handleAddYear = () => {
@@ -35,7 +37,10 @@ export default function PaymentMatrix() {
      if (y > 2000 && y < 2100) { addYearToResidence(id, y); setNewYear(''); }
   };
   const handleRemoveYear = (year) => {
-     if (window.confirm(`Masquer l'année ${year} ?`)) removeYearFromResidence(id, year);
+     if (window.confirm(`Supprimer DÉFINITIVEMENT l'année ${year} de la base de données ?`)) removeYearFromResidence(id, year);
+  };
+  const toggleYearVisibility = (year) => {
+     setHiddenYears(prev => prev.includes(year) ? prev.filter(y => y !== year) : [...prev, year]);
   };
 
   const debts = [];
@@ -206,10 +211,17 @@ export default function PaymentMatrix() {
             <div>
               <h2 style={{marginBottom: '0.5rem'}}>Matrice - Multi-Années</h2>
             </div>
-            <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
-              <input type="number" className="input-field" placeholder="Ex: 2026" style={{width: '100px'}} value={newYear} onChange={e => setNewYear(e.target.value)} />
-              <button className="btn btn-outline" onClick={handleAddYear}><CalendarPlus size={18} /></button>
-              <button className="btn btn-primary" onClick={() => window.print()}><FileDown size={18} /> PDF Matrice (Arabe)</button>
+            <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap'}}>
+              <span style={{fontSize: '0.9rem', color: 'var(--text-secondary)', marginRight: '0.5rem'}}>Affichage :</span>
+              {dbYears.sort((a,b)=>a-b).map(year => (
+                <button key={year} onClick={() => toggleYearVisibility(year)} className={`btn ${hiddenYears.includes(year) ? 'btn-outline' : 'btn-primary'}`} style={{padding: '0.3rem 0.6rem', fontSize: '0.85rem'}}>
+                   {year} {hiddenYears.includes(year) ? '👁️‍🗨️' : '👁️'}
+                </button>
+              ))}
+              <div style={{width: '1px', height: '24px', backgroundColor: 'var(--border-color)', margin: '0 0.5rem'}}></div>
+              <input type="number" className="input-field" placeholder="Ex: 2026" style={{width: '90px', padding: '0.3rem'}} value={newYear} onChange={e => setNewYear(e.target.value)} />
+              <button className="btn btn-outline" style={{padding: '0.3rem 0.6rem'}} onClick={handleAddYear} title="Ajouter à la base"><CalendarPlus size={16} /></button>
+              <button className="btn btn-primary" style={{padding: '0.3rem 0.6rem'}} onClick={() => window.print()} title="Imprimer la matrice (PDF)"><FileDown size={16} /> PDF Arabe</button>
             </div>
           </div>
           
