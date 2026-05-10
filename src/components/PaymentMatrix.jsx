@@ -4,6 +4,7 @@ import { useCopro } from '../context/CoproContext';
 import { ArrowLeft, Trash2, CalendarPlus, FileDown, Receipt, Check, X } from 'lucide-react';
 import logoUrl from '../assets/logo.png';
 
+import * as XLSX from 'xlsx';
 import Barcode from 'react-barcode';
 
 const monthsFr = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
@@ -17,6 +18,73 @@ export default function PaymentMatrix() {
   const [newYear, setNewYear] = useState('');
   const [activeTab, setActiveTab] = useState('matrix');
   const [debtPeriod, setDebtPeriod] = useState('منذ فاتح غشت 2024 الى غاية نهاية شهر يوليوز 2025');
+
+  const exportToExcel = () => {
+    const wb = XLSX.utils.book_new();
+    
+    // Sheet 1 — Matrice des paiements
+    const matrixRows = [];
+    const headerRow = ['Appartement', 'Propriétaire'];
+    const years = (residence.years || [2025]).sort((a,b) => a-b);
+    years.forEach(y => monthsFr.forEach(m => headerRow.push(`${m} ${y}`)));
+    matrixRows.push(headerRow);
+    
+    aptIds.forEach(apt => {
+      const info = matrix[apt];
+      const row = [apt, info.client || ''];
+      years.forEach(y => {
+        const months = info.years?.[y] || Array(12).fill('unpaid');
+        months.forEach(s => row.push(s === 'paid' ? 'Payé' : 'Impayé'));
+      });
+      matrixRows.push(row);
+    });
+    
+    const ws1 = XLSX.utils.aoa_to_sheet(matrixRows);
+    XLSX.utils.book_append_sheet(wb, ws1, 'Matrice');
+    
+    // Sheet 2 — Dettes
+    const debtRows = [['Appartement', 'Propriétaire', 'Mois Impayés', 'Montant (DH)']];
+    aptIds.forEach(apt => {
+      const info = matrix[apt];
+      const unpaidList = [];
+      years.forEach(y => {
+        const months = info.years?.[y] || Array(12).fill('unpaid');
+        months.forEach((s, i) => { if (s !== 'paid') unpaidList.push(`${monthsFr[i]} ${y}`); });
+      });
+      if (unpaidList.length > 0) {
+        debtRows.push([apt, info.client || '', unpaidList.join(', '), unpaidList.length * costPerMonth]);
+      }
+    });
+    const ws2 = XLSX.utils.aoa_to_sheet(debtRows);
+    XLSX.utils.book_append_sheet(wb, ws2, 'Dettes');
+
+    // Sheet 3 — Historique des paiements
+    const histRows = [['Date et Heure', 'Reçu N°', 'Appartement', 'Propriétaire', 'Mois Payés', 'Montant (DH)']];
+    history.forEach(h => {
+      histRows.push([
+        new Date(h.created_at).toLocaleString('fr-FR'),
+        h.receipt_id,
+        h.apt_number,
+        h.client_name,
+        h.paid_months_str,
+        h.total_amount
+      ]);
+    });
+    const ws3 = XLSX.utils.aoa_to_sheet(histRows);
+    XLSX.utils.book_append_sheet(wb, ws3, 'Historique');
+
+    // Sheet 4 — Propriétaires
+    const clientRows = [['Appartement', 'Nom', 'Téléphone', 'Étage', 'CIN']];
+    const resClients = (data.clients || []).filter(c => c.residenceId === id);
+    resClients.sort((a,b) => parseInt(a.aptNumber) - parseInt(b.aptNumber)).forEach(c => {
+      clientRows.push([c.aptNumber, c.name, c.phone, c.floor, c.cin]);
+    });
+    const ws4 = XLSX.utils.aoa_to_sheet(clientRows);
+    XLSX.utils.book_append_sheet(wb, ws4, 'Propriétaires');
+    
+    const date = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `CoproSync_${residence.name}_${date}.xlsx`);
+  };
   
   const [receiptModal, setReceiptModal] = useState(null);
   const [printData, setPrintData] = useState(null);
@@ -220,6 +288,11 @@ export default function PaymentMatrix() {
              Historique
            </button>
         </div>
+         <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem'}}>
+           <button className="btn btn-outline" onClick={exportToExcel} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', borderColor: '#22c55e', color: '#22c55e'}}>
+             <FileDown size={18} /> Exporter Excel (Sauvegarde)
+           </button>
+         </div>
       
         {activeTab === 'matrix' && (
           <div className="card" style={{overflowX: 'auto'}}>
