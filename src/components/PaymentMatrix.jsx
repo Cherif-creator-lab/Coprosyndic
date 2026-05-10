@@ -426,6 +426,7 @@ export default function PaymentMatrix() {
                       <th style={{border: '2px solid #000', padding: '10px'}}>ملاحظات</th>
                       <th style={{border: '2px solid #000', padding: '10px'}}>المبلغ الإجمالي</th>
                       <th style={{border: '2px solid #000', padding: '10px'}}>عدد الأشهر</th>
+                      <th style={{border: '2px solid #000', padding: '10px'}}>المالك</th>
                       <th style={{border: '2px solid #000', padding: '10px'}}>رقم الشقة</th>
                       <th style={{border: '2px solid #000', padding: '10px'}}>العمارة</th>
                    </tr>
@@ -436,6 +437,7 @@ export default function PaymentMatrix() {
                         <td style={{border: '1px solid #000', padding: '8px'}}></td>
                         <td style={{border: '1px solid #000', padding: '8px', fontSize: '18px'}}>{d.total.toLocaleString()} درهم</td>
                         <td style={{border: '1px solid #000', padding: '8px', fontWeight: 'bold'}}>{d.months}</td>
+                        <td style={{border: '1px solid #000', padding: '8px', fontWeight: 'bold'}}>{d.client}</td>
                         <td style={{border: '1px solid #000', padding: '8px', fontWeight: 'bold'}}>{d.apt}</td>
                         <td style={{border: '1px solid #000', padding: '8px', fontWeight: 'bold'}}>{residence.name}</td>
                       </tr>
