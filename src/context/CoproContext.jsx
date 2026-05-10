@@ -131,6 +131,48 @@ export function CoproProvider({ children }) {
     }
   };
 
+  const editClient = async (id, updatedClient) => {
+    const { data: updatedClientData, error } = await supabase
+      .from('clients')
+      .update({
+         residence_id: updatedClient.residenceId,
+         name: updatedClient.name,
+         apt_number: updatedClient.aptNumber,
+         phone: updatedClient.phone,
+         floor: updatedClient.floor,
+         cin: updatedClient.cin
+      })
+      .eq('id', id)
+      .select().single();
+
+    if (!error && updatedClientData) {
+      const mapped = {
+           id: updatedClientData.id,
+           residenceId: updatedClientData.residence_id,
+           name: updatedClientData.name,
+           aptNumber: updatedClientData.apt_number,
+           phone: updatedClientData.phone,
+           floor: updatedClientData.floor,
+           cin: updatedClientData.cin
+      };
+      setData(prev => ({
+        ...prev,
+        clients: prev.clients.map(c => c.id === id ? mapped : c)
+      }));
+    }
+  };
+
+  const deleteClient = async (id) => {
+    if(!window.confirm('Voulez-vous vraiment supprimer ce client ?')) return;
+    const { error } = await supabase.from('clients').delete().eq('id', id);
+    if (!error) {
+      setData(prev => ({
+        ...prev,
+        clients: prev.clients.filter(c => c.id !== id)
+      }));
+    }
+  };
+
   const togglePayment = async (residenceId, year, aptNumber, monthIndex) => {
     let currentStatus = 'unpaid';
     
@@ -253,7 +295,7 @@ export function CoproProvider({ children }) {
   }
 
   return (
-    <CoproContext.Provider value={{ data, togglePayment, addResidence, addClient, addYearToResidence, removeYearFromResidence, getMatrixForResidence }}>
+    <CoproContext.Provider value={{ data, togglePayment, addResidence, addClient, editClient, deleteClient, addYearToResidence, removeYearFromResidence, getMatrixForResidence }}>
       {children}
     </CoproContext.Provider>
   );

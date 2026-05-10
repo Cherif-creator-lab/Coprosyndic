@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useCopro } from '../context/CoproContext';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Edit2, Trash2 } from 'lucide-react';
 
 export default function ClientManagement() {
-  const { data, addClient } = useCopro();
+  const { data, addClient, editClient, deleteClient } = useCopro();
   const [showForm, setShowForm] = useState(false);
+  const [editingClientId, setEditingClientId] = useState(null);
   
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -13,12 +14,33 @@ export default function ClientManagement() {
   const [residenceId, setResidenceId] = useState('');
   const [aptNumber, setAptNumber] = useState('');
 
+  const resetForm = () => {
+     setName(''); setPhone(''); setCin(''); setFloor(''); setAptNumber(''); setResidenceId('');
+     setEditingClientId(null);
+     setShowForm(false);
+  };
+
+  const handleEditClick = (client) => {
+     setName(client.name || '');
+     setPhone(client.phone || '');
+     setCin(client.cin || '');
+     setFloor(client.floor || '');
+     setResidenceId(client.residenceId || '');
+     setAptNumber(client.aptNumber || '');
+     setEditingClientId(client.id);
+     setShowForm(true);
+     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if(name && residenceId && aptNumber) {
-       addClient({ name, phone, cin, floor, residenceId, aptNumber });
-       setName(''); setPhone(''); setCin(''); setFloor(''); setAptNumber('');
-       setShowForm(false);
+       if (editingClientId) {
+          editClient(editingClientId, { name, phone, cin, floor, residenceId, aptNumber });
+       } else {
+          addClient({ name, phone, cin, floor, residenceId, aptNumber });
+       }
+       resetForm();
     }
   };
 
@@ -26,14 +48,17 @@ export default function ClientManagement() {
     <div>
       <div className="page-header">
         <h1>Gérer les Clients</h1>
-        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+        <button className="btn btn-primary" onClick={() => { resetForm(); setShowForm(true); }}>
           <UserPlus size={18} /> Nouveau Client
         </button>
       </div>
 
       {showForm && (
         <div className="card" style={{marginBottom: '2rem'}}>
-          <h3 style={{marginBottom: '1rem'}}>Affecter un Client</h3>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
+             <h3 style={{margin: 0}}>{editingClientId ? 'Modifier le Client' : 'Affecter un Client'}</h3>
+             <button className="btn btn-outline" onClick={resetForm} style={{padding: '0.4rem 0.8rem'}}>Annuler</button>
+          </div>
           <form onSubmit={handleSubmit} style={{display: 'flex', gap: '1rem', flexWrap: 'wrap'}}>
             <div className="input-group" style={{flex: '1', minWidth: '200px'}}>
               <label className="input-label">Nom et Prénom</label>
@@ -69,7 +94,7 @@ export default function ClientManagement() {
             </div>
 
             <div style={{display: 'flex', alignItems: 'flex-end', paddingBottom: '1rem', width: '100%', justifyContent: 'flex-end'}}>
-              <button type="submit" className="btn btn-primary">Ajouter</button>
+              <button type="submit" className="btn btn-primary">{editingClientId ? 'Sauvegarder les modifications' : 'Ajouter le client'}</button>
             </div>
           </form>
         </div>
@@ -84,6 +109,7 @@ export default function ClientManagement() {
               <th>Résidence Associée</th>
               <th>Étage</th>
               <th>Appartement</th>
+              <th style={{textAlign: 'center'}}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -99,11 +125,21 @@ export default function ClientManagement() {
                    <td>{res ? res.name : 'Inconnue ('+c.residenceId+')'}</td>
                    <td>{c.floor || '-'}</td>
                    <td><strong>Apt #{c.aptNumber}</strong></td>
+                   <td>
+                      <div style={{display: 'flex', gap: '0.5rem', justifyContent: 'center'}}>
+                         <button className="btn btn-outline" style={{padding: '0.4rem'}} onClick={() => handleEditClick(c)} title="Modifier">
+                            <Edit2 size={16} />
+                         </button>
+                         <button className="btn btn-outline" style={{padding: '0.4rem', color: '#e74c3c', borderColor: '#e74c3c'}} onClick={() => deleteClient(c.id)} title="Supprimer">
+                            <Trash2 size={16} />
+                         </button>
+                      </div>
+                   </td>
                  </tr>
                );
             })}
             {(!data.clients || data.clients.length === 0) && (
-              <tr><td colSpan="5" style={{textAlign: 'center', padding: '2rem'}}>Aucun client assigné pour le moment.</td></tr>
+              <tr><td colSpan="6" style={{textAlign: 'center', padding: '2rem'}}>Aucun client assigné pour le moment.</td></tr>
             )}
           </tbody>
         </table>
