@@ -235,7 +235,7 @@ export default function PaymentMatrix() {
                 <thead>
                   <tr>
                     <th rowSpan="2" style={{borderRight: '1px solid var(--border-color)', verticalAlign: 'middle'}}>Apt</th>
-                    <th rowSpan="2" style={{borderRight: '2px solid var(--border-gold)', verticalAlign: 'middle', minWidth: '150px'}}>Copropriétaire</th>
+                    <th rowSpan="2" style={{borderRight: '2px solid var(--border-gold)', verticalAlign: 'middle', minWidth: '150px'}}>Propriétaire</th>
                     {activeYears.map(year => (
                       <th key={year} colSpan={12} style={{textAlign: 'center', borderRight: '2px solid var(--border-gold)', backgroundColor: 'var(--bg-secondary)'}}>
                          <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '1rem'}}>
@@ -362,6 +362,7 @@ export default function PaymentMatrix() {
                    <tr>
                       <th style={{border: '1px solid #000', padding: '5px', backgroundColor: '#555', color: '#fff'}} rowSpan="2">العمارة</th>
                       <th style={{border: '1px solid #000', padding: '5px', backgroundColor: '#555', color: '#fff'}} rowSpan="2">رقم الشقة</th>
+                      <th style={{border: '1px solid #000', padding: '5px', backgroundColor: '#555', color: '#fff'}} rowSpan="2">المالك</th>
                       {activeYears.map(year => (
                         <th key={year} colSpan={12} style={{border: '1px solid #000', padding: '5px', backgroundColor: '#888', color: '#fff'}}>{year}</th>
                       ))}
@@ -381,6 +382,7 @@ export default function PaymentMatrix() {
                         <tr key={apt}>
                           <td style={{border: '1px solid #000', padding: '5px', backgroundColor: '#e0e0e0'}}>{residence.name}</td>
                           <td style={{border: '1px solid #000', padding: '5px', fontWeight: 'bold', backgroundColor: '#e0e0e0'}}>{apt}</td>
+                          <td style={{border: '1px solid #000', padding: '5px', backgroundColor: '#e0e0e0', fontSize: '10px'}}>{info.client}</td>
                           {activeYears.map(year => {
                              const yearMonths = info.years[year] || Array(12).fill('unpaid');
                              return yearMonths.map((status, index) => (
