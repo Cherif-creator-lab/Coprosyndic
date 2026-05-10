@@ -140,7 +140,7 @@ export default function PaymentMatrix() {
           .print-only { display: block !important; }
           .sidebar { display: none !important; }
           .main-content { padding: 0 !important; overflow: visible !important; background: white !important; }
-          body, * { color: black !important; background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+          body { background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           @page { size: ${pageSize}; margin: ${pageMargin}; }
         }
         @media screen {
