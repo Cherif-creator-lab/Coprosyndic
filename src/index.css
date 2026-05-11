@@ -274,29 +274,130 @@ tr:hover td {
   background-color: transparent;
 }
 
-/* Responsive */
+/* Responsive - Mobile First */
 @media (max-width: 768px) {
+  /* Typography scale down */
+  h1 { font-size: 1.6rem; }
+  h2 { font-size: 1.3rem; }
+  h3 { font-size: 1.1rem; }
+
+  /* Layout: sidebar becomes bottom nav bar */
   .app-container {
     flex-direction: column;
+    min-height: 100vh;
   }
+
+  /* Sidebar becomes a sticky bottom nav bar */
   .sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100%;
+    z-index: 1000;
     border-right: none;
-    border-bottom: 1px solid var(--border-gold);
+    border-top: 1px solid var(--border-gold);
+    background-color: var(--bg-secondary);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
   }
+
+  /* Hide sidebar header on mobile */
+  .sidebar-header {
+    display: none;
+  }
+
+  /* Nav becomes horizontal row */
   .sidebar-nav {
     flex-direction: row;
+    padding: 0;
+    gap: 0;
     overflow-x: auto;
-    padding: 1rem;
+    justify-content: space-around;
   }
+
+  /* Each nav item becomes compact icon+label */
   .nav-item {
-    border-right: none;
-    border-bottom: 3px solid transparent;
-    padding: 0.5rem 1rem;
+    flex-direction: column;
+    gap: 0.2rem;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.65rem;
+    border-right: none !important;
+    border-bottom: 2px solid transparent;
+    min-width: 60px;
+    align-items: center;
+    text-align: center;
     white-space: nowrap;
+    flex: 1;
   }
-  .nav-item.active {
-    border-right: none;
-    border-bottom: 3px solid var(--color-gold);
+
+  .nav-item.active,
+  .nav-item:hover {
+    border-right: none !important;
+    border-bottom: 2px solid var(--color-gold);
+    background-color: rgba(212, 175, 55, 0.1);
+  }
+
+  /* Main content: add padding-bottom to avoid overlap with bottom bar */
+  .main-content {
+    padding: 1rem;
+    padding-bottom: 80px;
+    width: 100%;
+  }
+
+  /* Cards: less padding */
+  .card {
+    padding: 1rem;
+    border-radius: 8px;
+  }
+
+  /* Page header: stack vertically */
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+  }
+
+  /* Buttons: full width on mobile */
+  .btn {
+    font-size: 0.9rem;
+    padding: 0.65rem 1rem;
+  }
+
+  /* Tables: allow horizontal scroll */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 600px;
+  }
+
+  th, td {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  /* Dashboard grid: 1 column */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Stat value smaller */
+  .stat-value {
+    font-size: 1.6rem;
+  }
+
+  /* Matrix cells smaller */
+  .matrix-cell {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Input fields: full width */
+  .input-field {
+    font-size: 16px; /* Prevents iOS zoom on focus */
   }
 }
