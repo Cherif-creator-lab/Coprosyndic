@@ -57,7 +57,7 @@ export default function App() {
     return (
       <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', gap: '1rem', background: 'var(--bg-primary)'}}>
         <img src={logoUrl} alt="CoproSync Logo" style={{ width: '180px', height: 'auto', marginBottom: '1rem', filter: 'drop-shadow(0 8px 32px rgba(212, 175, 55, 0.3))' }} />
-        <h1 style={{marginBottom: '0.5rem', textAlign: 'center'}}>COPRO GERI SERVICES</h1>
+        <h1 style={{marginBottom: '0.5rem', textAlign: 'center'}}>COPRO SYNC HT</h1>
         <p style={{color: 'var(--text-secondary)', marginBottom: '2rem'}}>Application de Gestion Exclusive</p>
         
         <div className="card" style={{width: '100%', maxWidth: '400px'}}>

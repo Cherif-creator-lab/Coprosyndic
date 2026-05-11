@@ -81,7 +81,7 @@ export default function DashboardOverview() {
       <div className="page-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
         <div>
            <h1 style={{fontSize: '2rem', marginBottom: '0.2rem', background: 'linear-gradient(45deg, #d4af37, #f1c40f)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>Vue d'Ensemble Premium</h1>
-           <p style={{color: 'var(--text-secondary)', margin: 0}}>Copro Geri Services - Centre de pilotage central</p>
+           <p style={{color: 'var(--text-secondary)', margin: 0}}>Copro Sync HT - Centre de pilotage central</p>
         </div>
       </div>
 
