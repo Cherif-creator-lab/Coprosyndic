@@ -24,7 +24,7 @@ export default function ResidencesList() {
 
   return (
     <div>
-      <div className="page-header">
+      <div className="page-header" style={{flexWrap: 'wrap', gap: '0.75rem'}}>
         <h1>Gérer les Résidences</h1>
         <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
           <Plus size={18} /> Nouvelle Résidence

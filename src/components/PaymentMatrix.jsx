@@ -274,7 +274,7 @@ export default function PaymentMatrix() {
           <h1 style={{margin: 0}}>{residence.name}</h1>
         </div>
 
-        <div style={{display: 'flex', gap: '1rem', marginBottom: '1.5rem'}}>
+        <div className="mobile-tabs" style={{display: 'flex', gap: '1rem', marginBottom: '1rem'}}>
            <button className={`btn ${activeTab === 'matrix' ? 'btn-primary' : 'btn-outline'}`} onClick={() => setActiveTab('matrix')} style={{flex: 1}}>
              Matrice Globale
            </button>
@@ -289,7 +289,7 @@ export default function PaymentMatrix() {
            </button>
         </div>
          <div style={{display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem'}}>
-           <button className="btn btn-outline" onClick={exportToExcel} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', borderColor: '#22c55e', color: '#22c55e'}}>
+           <button className="btn btn-outline mobile-export" onClick={exportToExcel} style={{display: 'flex', alignItems: 'center', gap: '0.5rem', borderColor: '#22c55e', color: '#22c55e'}}>
              <FileDown size={18} /> Exporter Excel (Sauvegarde)
            </button>
          </div>
@@ -373,10 +373,10 @@ export default function PaymentMatrix() {
 
         {activeTab === 'debts' && (
           <div className="card">
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.75rem'}}>
               <h2>Arriérés de "{residence.name}"</h2>
               <div style={{display: 'flex', gap: '1rem', alignItems: 'center'}}>
-                <input type="text" className="input-field" value={debtPeriod} onChange={e => setDebtPeriod(e.target.value)} placeholder="Période (Arabe)" style={{width: '350px'}} dir="rtl" />
+                <input type="text" className="input-field" value={debtPeriod} onChange={e => setDebtPeriod(e.target.value)} placeholder="Période (Arabe)" className="debt-period-input" style={{width: '350px'}} dir="rtl" />
                 <button className="btn btn-primary" onClick={() => window.print()}>
                   <FileDown size={18} /> PDF Dettes (Arabe)
                 </button>
@@ -436,7 +436,7 @@ export default function PaymentMatrix() {
         {activeTab === 'history' && (
           <div className="card" style={{overflowX: 'auto'}}>
             <h2 style={{marginBottom: '1rem'}}>Historique des Paiements</h2>
-            <table className="data-table" style={{width: '100%', minWidth: '800px'}}>
+            <table className="data-table" style={{width: '100%', minWidth: '500px'}}>
               <thead>
                 <tr>
                   <th>Date et Heure</th>

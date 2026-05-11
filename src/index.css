@@ -401,3 +401,57 @@ tr:hover td {
     font-size: 16px; /* Prevents iOS zoom on focus */
   }
 }
+
+
+/* ============================
+   EXTRA MOBILE FIXES - Modules
+   ============================ */
+@media (max-width: 768px) {
+
+  /* Tabs: 2x2 grid instead of 4 inline */
+  .mobile-tabs {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem;
+  }
+
+  .mobile-tabs .btn {
+    font-size: 0.72rem;
+    padding: 0.55rem 0.3rem;
+  }
+
+  /* Excel export button: full width on mobile */
+  .mobile-export {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Cards on list pages */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  /* Debt table input period: full width */
+  .debt-period-input {
+    width: 100% !important;
+    font-size: 14px;
+  }
+
+  /* History table: smaller minimum */
+  .history-table {
+    min-width: 500px !important;
+  }
+
+  /* Page header on residence page */
+  .residence-header h1 {
+    font-size: 1.3rem;
+  }
+
+  /* Form inputs: full width */
+  .input-group {
+    min-width: 100% !important;
+  }
+}
