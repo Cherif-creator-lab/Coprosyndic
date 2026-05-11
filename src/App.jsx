@@ -9,7 +9,7 @@ import ResidencesList from './components/ResidencesList';
 import ClientManagement from './components/ClientManagement';
 import PaymentMatrix from './components/PaymentMatrix';
 
-function Sidebar() {
+function Sidebar({ onLogout }) {
   const location = useLocation();
   const navItems = [
     { name: 'Tableau de Bord', path: '/', icon: <LayoutDashboard size={20} /> },
@@ -41,7 +41,7 @@ function Sidebar() {
           </Link>
         ))}
         <div style={{ marginTop: 'auto', padding: '1.5rem 0' }}>
-           <button className="nav-item" style={{ color: '#e74c3c' }}>
+           <button className="nav-item" style={{ color: '#e74c3c', background: 'none', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }} onClick={onLogout}>
              <LogOut size={20} /> Déconnexion
            </button>
         </div>
@@ -81,7 +81,7 @@ export default function App() {
     <Router>
       <CoproProvider>
         <div className="app-container">
-          <Sidebar />
+          <Sidebar onLogout={() => setIsAuthenticated(false)} />
           <main className="main-content">
             <Routes>
               <Route path="/" element={<DashboardOverview />} />
