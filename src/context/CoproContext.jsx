@@ -270,7 +270,7 @@ export function CoproProvider({ children }) {
   }
 
   return (
-    <CoproContext.Provider value={{ data, togglePayment, addResidence, editResidence, addClient, editClient, deleteClient, deleteResidence, addYearToResidence, removeYearFromResidence, getMatrixForResidence, logPaymentHistory }}>
+    <CoproContext.Provider value={{ data, togglePayment, addResidence, addClient, editClient, deleteClient, deleteResidence, addYearToResidence, removeYearFromResidence, getMatrixForResidence, logPaymentHistory }}>
       {children}
     </CoproContext.Provider>
   );
