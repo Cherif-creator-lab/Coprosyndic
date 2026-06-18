@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useCopro } from '../context/CoproContext';
 import { Link } from 'react-router-dom';
-import { Building2, Plus, FileText, Banknote, Trash2 } from 'lucide-react';
+import { Building2, Plus, FileText, Banknote, Trash2, Edit2 } from 'lucide-react';
 
 export default function ResidencesList() {
-  const { data, addResidence, deleteResidence } = useCopro();
+  const { data, addResidence, editResidence, deleteResidence } = useCopro();
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
@@ -16,24 +17,46 @@ export default function ResidencesList() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if(name.trim() !== '') {
-       addResidence({ name, address, titreFoncier, apartments: Number(apartments), cotisation: Number(cotisation) });
+       if (editingId) {
+         editResidence(editingId, { name, address, titreFoncier, apartments: Number(apartments), cotisation: Number(cotisation) });
+       } else {
+         addResidence({ name, address, titreFoncier, apartments: Number(apartments), cotisation: Number(cotisation) });
+       }
        setName(''); setAddress(''); setTitreFoncier(''); setApartments(20); setCotisation(300);
+       setEditingId(null);
        setShowForm(false);
     }
+  };
+
+  const handleEditClick = (res) => {
+    setName(res.name);
+    setAddress(res.address);
+    setTitreFoncier(res.titreFoncier);
+    setApartments(res.apartments);
+    setCotisation(res.cotisation);
+    setEditingId(res.id);
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  
+  const resetForm = () => {
+    setName(''); setAddress(''); setTitreFoncier(''); setApartments(20); setCotisation(300);
+    setEditingId(null);
+    setShowForm(!showForm);
   };
 
   return (
     <div>
       <div className="page-header" style={{flexWrap: 'wrap', gap: '0.75rem'}}>
         <h1>Gérer les Résidences</h1>
-        <button className="btn btn-primary" onClick={() => setShowForm(!showForm)}>
+        <button className="btn btn-primary" onClick={resetForm}>
           <Plus size={18} /> Nouvelle Résidence
         </button>
       </div>
 
       {showForm && (
         <div className="card" style={{marginBottom: '2rem'}}>
-          <h3 style={{marginBottom: '1rem'}}>Ajouter une Résidence</h3>
+          <h3 style={{marginBottom: '1rem'}}>{editingId ? 'Modifier la Résidence' : 'Ajouter une Résidence'}</h3>
           <form onSubmit={handleSubmit} style={{display: 'flex', gap: '1rem', flexWrap: 'wrap'}}>
             <div className="input-group" style={{flex: '1', minWidth: '200px'}}>
               <label className="input-label">Nom de la Résidence</label>
@@ -56,7 +79,7 @@ export default function ResidencesList() {
               <input type="number" className="input-field" required value={cotisation} onChange={e => setCotisation(e.target.value)} min="0" step="0.01" />
             </div>
             <div style={{display: 'flex', alignItems: 'flex-end', paddingBottom: '1rem', width: '100%', justifyContent: 'flex-end'}}>
-              <button type="submit" className="btn btn-primary">Enregistrer la résidence</button>
+              <button type="submit" className="btn btn-primary">{editingId ? 'Mettre à jour' : 'Enregistrer la résidence'}</button>
             </div>
           </form>
         </div>
@@ -69,9 +92,14 @@ export default function ResidencesList() {
                <Building2 size={24} color="var(--color-gold)" />
                <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
                   <h3 style={{margin: 0}}>{res.name}</h3>
-                  <button className="btn btn-outline" style={{padding: '0.4rem', color: '#e74c3c', borderColor: '#e74c3c'}} onClick={(e) => { e.preventDefault(); deleteResidence(res.id); }} title="Supprimer la résidence">
-                     <Trash2 size={18} />
-                  </button>
+                  <div style={{display: 'flex', gap: '0.5rem'}}>
+                    <button className="btn btn-outline" style={{padding: '0.4rem'}} onClick={(e) => { e.preventDefault(); handleEditClick(res); }} title="Modifier la résidence">
+                       <Edit2 size={18} />
+                    </button>
+                    <button className="btn btn-outline" style={{padding: '0.4rem', color: '#e74c3c', borderColor: '#e74c3c'}} onClick={(e) => { e.preventDefault(); deleteResidence(res.id); }} title="Supprimer la résidence">
+                       <Trash2 size={18} />
+                    </button>
+                  </div>
                </div>
             </div>
             <div style={{color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem'}}>
