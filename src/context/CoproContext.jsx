@@ -140,6 +140,23 @@ export function CoproProvider({ children }) {
     } catch (e) { console.error('deleteClient error:', e); }
   };
 
+    const deleteResidence = async (id) => {
+    if (!window.confirm('Voulez-vous vraiment supprimer cette résidence et TOUTES ses données (clients, paiements) ?')) return;
+    try {
+      await sql`DELETE FROM residences WHERE id = ${id}`;
+      setData(prev => {
+        const newPayments = { ...prev.payments };
+        delete newPayments[id];
+        return {
+          ...prev,
+          residences: prev.residences.filter(r => r.id !== id),
+          clients: prev.clients.filter(c => c.residenceId !== id),
+          payments: newPayments
+        };
+      });
+    } catch (e) { console.error('deleteResidence error:', e); }
+  };
+
   const togglePayment = async (residenceId, year, aptNumber, monthIndex) => {
     let currentStatus = 'unpaid';
 
@@ -253,7 +270,7 @@ export function CoproProvider({ children }) {
   }
 
   return (
-    <CoproContext.Provider value={{ data, togglePayment, addResidence, addClient, editClient, deleteClient, addYearToResidence, removeYearFromResidence, getMatrixForResidence, logPaymentHistory }}>
+    <CoproContext.Provider value={{ data, togglePayment, addResidence, addClient, editClient, deleteClient, deleteResidence, addYearToResidence, removeYearFromResidence, getMatrixForResidence, logPaymentHistory }}>
       {children}
     </CoproContext.Provider>
   );

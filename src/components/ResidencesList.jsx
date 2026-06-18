@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useCopro } from '../context/CoproContext';
 import { Link } from 'react-router-dom';
-import { Building2, Plus, FileText, Banknote } from 'lucide-react';
+import { Building2, Plus, FileText, Banknote, Trash2 } from 'lucide-react';
 
 export default function ResidencesList() {
-  const { data, addResidence } = useCopro();
+  const { data, addResidence, deleteResidence } = useCopro();
   const [showForm, setShowForm] = useState(false);
   
   const [name, setName] = useState('');
@@ -67,7 +67,12 @@ export default function ResidencesList() {
           <div key={res.id} className="card" style={{borderTop: '4px solid var(--color-gold)'}}>
             <div style={{display: 'flex', alignItems: 'center', gap: '0.8rem', marginBottom: '1rem'}}>
                <Building2 size={24} color="var(--color-gold)" />
-               <h3 style={{margin: 0}}>{res.name}</h3>
+               <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'center'}}>
+                  <h3 style={{margin: 0}}>{res.name}</h3>
+                  <button className="btn btn-outline" style={{padding: '0.4rem', color: '#e74c3c', borderColor: '#e74c3c'}} onClick={(e) => { e.preventDefault(); deleteResidence(res.id); }} title="Supprimer la résidence">
+                     <Trash2 size={18} />
+                  </button>
+               </div>
             </div>
             <div style={{color: 'var(--text-secondary)', marginBottom: '1.5rem', fontSize: '0.9rem'}}>
                <p style={{marginBottom: '0.5rem'}}>{res.address}</p>
